@@ -1,19 +1,158 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Property Comparison Tool</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Property Investment Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-container {
+            text-align: left;
+            margin: 10px 0;
+        }
+
+        .input-container label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .input-container input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        .button {
+            background: #0074D9;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background: #0056b3;
+        }
+
+        .result-container {
+            text-align: left;
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-container h2 {
+            margin-top: 0;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Property Comparison Tool</h1>
-        <button onclick="addProperty()" class="button">Add Property</button>
-        <div id="properties"></div>
-        <button onclick="compareProperties()" class="button">Compare</button>
-        <div id="comparisonResult" class="comparison-result"></div>
+        <h1>Property Investment Calculator</h1>
+        <div class="input-container">
+            <label for="purchasePrice">Purchase Price:</label>
+            <input type="number" id="purchasePrice" placeholder="Enter purchase price">
+        </div>
+
+        <div class="input-container">
+            <label for="rentalIncome">Monthly Rental Income:</label>
+            <input type="number" id="rentalIncome" placeholder="Enter monthly rental income">
+        </div>
+
+        <div class="input-container">
+            <label for="propertyExpenses">Monthly Property Expenses:</label>
+            <input type="number" id="propertyExpenses" placeholder="Enter monthly property expenses">
+        </div>
+
+        <div class "input-container">
+            <label for="propertyTaxes">Annual Property Taxes:</label>
+            <input type="number" id="propertyTaxes" placeholder="Enter annual property taxes">
+        </div>
+
+        <div class="input-container">
+            <label for="loanAmount">Loan Amount (if any):</label>
+            <input type="number" id="loanAmount" placeholder="Enter loan amount">
+        </div>
+
+        <div class="input-container">
+            <label for="interestRate">Loan Interest Rate (%):</label>
+            <input type="number" id="interestRate" placeholder="Enter loan interest rate">
+        </div>
+
+        <button onclick="calculateROI()" class="button">Calculate ROI</button>
+
+        <div id="result" class="result-container"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        function calculateROI() {
+            const purchasePrice = parseFloat(document.getElementById("purchasePrice").value);
+            const rentalIncome = parseFloat(document.getElementById("rentalIncome").value);
+            const propertyExpenses = parseFloat(document.getElementById("propertyExpenses").value);
+            const propertyTaxes = parseFloat(document.getElementById("propertyTaxes").value);
+            const loanAmount = parseFloat(document.getElementById("loanAmount").value);
+            const interestRate = parseFloat(document.getElementById("interestRate").value);
+
+            if (isNaN(purchasePrice) || isNaN(rentalIncome)) {
+                document.getElementById("result").innerHTML = "Please enter valid numbers.";
+                return;
+            }
+
+            // Calculate annual income and expenses
+            const annualIncome = rentalIncome * 12;
+            const annualExpenses = propertyExpenses * 12 + propertyTaxes;
+
+            // Calculate net annual cash flow
+            const netCashFlow = annualIncome - annualExpenses;
+
+            // Calculate ROI with or without a loan
+            let roi;
+            if (loanAmount > 0 && interestRate > 0) {
+                const monthlyLoanPayment = calculateMonthlyLoanPayment(loanAmount, interestRate);
+                roi = (((netCashFlow - (monthlyLoanPayment * 12)) / purchasePrice) * 100).toFixed(2);
+            } else {
+                roi = ((netCashFlow / purchasePrice) * 100).toFixed(2);
+            }
+
+            document.getElementById("result").innerHTML = `Estimated ROI: ${roi}%`;
+        }
+
+        function calculateMonthlyLoanPayment(loanAmount, interestRate) {
+            const monthlyInterestRate = (interestRate / 100) / 12;
+            const numberOfPayments = 30 * 12; // Assuming a 30-year loan
+            const monthlyPayment = loanAmount * monthlyInterestRate / (1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments));
+            return monthlyPayment;
+        }
+    </script>
 </body>
 </html>
+
 
